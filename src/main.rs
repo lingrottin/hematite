@@ -22,6 +22,7 @@ use glutin_window::*;
 use piston::event_loop::{EventLoop, EventSettings, Events};
 use piston::input::{AfterRenderEvent, MouseRelativeEvent, PressEvent, RenderEvent, UpdateEvent};
 use piston::window::{AdvancedWindow, OpenGLWindow, Size, Window, WindowSettings};
+use serde::Deserialize;
 use vecmath::{vec3_add, vec3_normalized, vec3_scale};
 
 pub mod chunk;
@@ -42,7 +43,7 @@ Options:
     --mcversion=<version>    Minecraft version [default: 1.8.8].
 ";
 
-#[derive(RustcDecodable)]
+#[derive(Deserialize)]
 struct Args {
     arg_world: String,
     flag_path: bool,
@@ -69,7 +70,7 @@ fn create_main_targets(
 
 fn main() {
     let args: Args = Docopt::new(USAGE)
-        .and_then(|dopt| dopt.decode())
+        .and_then(|dopt| dopt.argv(std::env::args().into_iter()).deserialize())
         .unwrap_or_else(|e| e.exit());
 
     // Automagically pull MC assets
